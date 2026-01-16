@@ -210,6 +210,9 @@
     </div>
 
     <script>
+        // Constants
+        const DEFAULT_LOAN_TERM = 30;
+
         // Get all input elements
         const loanAmountInput = document.getElementById('loanAmount');
         const interestRateInput = document.getElementById('interestRate');
@@ -220,9 +223,25 @@
         const resultDetails = document.getElementById('resultDetails');
         const maxYearsDisplay = document.getElementById('maxYears');
 
+        // Helper function to format currency
+        function formatCurrency(amount) {
+            return '$' + amount.toFixed(2);
+        }
+
+        // Helper function to validate inputs
+        function validateInputs(loanAmount, interestRate, loanTerm, payoffYears) {
+            if (loanAmount <= 0 || interestRate < 0 || loanTerm <= 0 || payoffYears <= 0) {
+                return 'Please enter valid loan details';
+            }
+            if (payoffYears > loanTerm) {
+                return 'New payoff timeframe cannot exceed original loan term';
+            }
+            return null;
+        }
+
         // Update slider max value when loan term changes
         function updateSliderMax() {
-            const loanTerm = parseInt(loanTermInput.value) || 30;
+            const loanTerm = parseInt(loanTermInput.value) || DEFAULT_LOAN_TERM;
             payoffYearsSlider.max = loanTerm;
             maxYearsDisplay.textContent = loanTerm + ' years';
             
@@ -261,15 +280,10 @@
             const payoffYears = parseInt(payoffYearsSlider.value) || 0;
 
             // Validate inputs
-            if (loanAmount <= 0 || interestRate < 0 || loanTerm <= 0 || payoffYears <= 0) {
-                additionalPaymentDisplay.textContent = '$0.00';
-                resultDetails.innerHTML = 'Please enter valid loan details';
-                return;
-            }
-
-            if (payoffYears > loanTerm) {
-                additionalPaymentDisplay.textContent = '$0.00';
-                resultDetails.innerHTML = 'New payoff timeframe cannot exceed original loan term';
+            const validationError = validateInputs(loanAmount, interestRate, loanTerm, payoffYears);
+            if (validationError) {
+                additionalPaymentDisplay.textContent = formatCurrency(0);
+                resultDetails.innerHTML = validationError;
                 return;
             }
 
@@ -288,14 +302,14 @@
             const interestSaved = originalTotalPaid - acceleratedTotalPaid;
 
             // Update display
-            additionalPaymentDisplay.textContent = '$' + additionalPayment.toFixed(2);
+            additionalPaymentDisplay.textContent = formatCurrency(additionalPayment);
             
             const yearsSaved = loanTerm - payoffYears;
             resultDetails.innerHTML = `
-                Original monthly payment: <strong>$${originalPayment.toFixed(2)}</strong><br>
-                New monthly payment: <strong>$${acceleratedPayment.toFixed(2)}</strong><br>
+                Original monthly payment: <strong>${formatCurrency(originalPayment)}</strong><br>
+                New monthly payment: <strong>${formatCurrency(acceleratedPayment)}</strong><br>
                 Years saved: <strong>${yearsSaved} years</strong><br>
-                Total interest saved: <strong>$${interestSaved.toFixed(2)}</strong>
+                Total interest saved: <strong>${formatCurrency(interestSaved)}</strong>
             `;
         }
 
