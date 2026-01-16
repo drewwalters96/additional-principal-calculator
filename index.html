@@ -225,7 +225,7 @@
 
         // Helper function to format currency
         function formatCurrency(amount) {
-            return '$' + amount.toFixed(2);
+            return `$${amount.toFixed(2)}`;
         }
 
         // Helper function to validate inputs
@@ -243,7 +243,7 @@
         function updateSliderMax() {
             const loanTerm = parseInt(loanTermInput.value) || DEFAULT_LOAN_TERM;
             payoffYearsSlider.max = loanTerm;
-            maxYearsDisplay.textContent = loanTerm + ' years';
+            maxYearsDisplay.textContent = `${loanTerm} years`;
             
             // If current slider value exceeds new max, adjust it
             if (parseInt(payoffYearsSlider.value) > loanTerm) {
@@ -260,6 +260,11 @@
 
         // Calculate monthly payment using amortization formula
         function calculateMonthlyPayment(principal, annualRate, years) {
+            // Validate years to prevent division by zero
+            if (years <= 0) {
+                return 0;
+            }
+            
             if (annualRate === 0) {
                 return principal / (years * 12);
             }
