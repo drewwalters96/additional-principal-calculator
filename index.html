@@ -223,12 +223,23 @@
         const resultDetails = document.getElementById('resultDetails');
         const maxYearsDisplay = document.getElementById('maxYears');
 
-        // Helper function to format currency
+        /**
+         * Format a number as USD currency with 2 decimal places
+         * @param {number} amount - The amount to format
+         * @returns {string} Formatted currency string (e.g., "$1520.06")
+         */
         function formatCurrency(amount) {
             return `$${amount.toFixed(2)}`;
         }
 
-        // Helper function to validate inputs
+        /**
+         * Validate loan calculator inputs
+         * @param {number} loanAmount - Total loan amount (must be > 0)
+         * @param {number} interestRate - Annual interest rate percentage (must be >= 0)
+         * @param {number} loanTerm - Original loan term in years (must be > 0)
+         * @param {number} payoffYears - Desired payoff timeframe in years (must be > 0 and <= loanTerm)
+         * @returns {string|null} Error message if validation fails, null if valid
+         */
         function validateInputs(loanAmount, interestRate, loanTerm, payoffYears) {
             if (loanAmount <= 0 || interestRate < 0 || loanTerm <= 0 || payoffYears <= 0) {
                 return 'Please enter valid loan details';
@@ -258,7 +269,15 @@
             calculate();
         });
 
-        // Calculate monthly payment using amortization formula
+        /**
+         * Calculate monthly payment using the standard amortization formula
+         * Formula: M = P * [r(1+r)^n] / [(1+r)^n - 1]
+         * Where: M = monthly payment, P = principal, r = monthly interest rate, n = number of payments
+         * @param {number} principal - Total loan amount
+         * @param {number} annualRate - Annual interest rate as a percentage (e.g., 4.5 for 4.5%)
+         * @param {number} years - Loan term in years
+         * @returns {number} Monthly payment amount
+         */
         function calculateMonthlyPayment(principal, annualRate, years) {
             // Validate years to prevent division by zero
             if (years <= 0) {
